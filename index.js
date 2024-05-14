@@ -174,12 +174,12 @@ app.post('/savedjob',verifyToken, async (req, res) => {
             updatedAt
         });
         res.status(201).json({
-            message: 'job added successfully',
-            insertedjobsId: jobsResult.insertedId,
+            message: 'job saved successfully',
+            savedJobsId: jobsResult.insertedId,
         });
     } catch (error) {
-        console.error('Error adding job', error);
-        res.status(500).json({ message: 'Error adding job' });
+        console.error('Error saving job', error);
+        res.status(500).json({ message: 'Error saving job' });
     }
 });
 // GET endpoint to fetch all jobs
