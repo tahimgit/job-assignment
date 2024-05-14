@@ -254,8 +254,8 @@ app.get('/category/:id', async (req, res) => {
 
         res.json(jobs);
     } catch (error) {
-        console.error('Error fetching latest posts:', error);
-        res.status(500).json({ message: 'Error fetching latest posts' });
+        console.error('Error fetching job by category:', error);
+        res.status(500).json({ message: 'Error fetching job by category' });
     }
 });
 app.get('/job/:id', async (req, res) => {
@@ -269,13 +269,13 @@ app.get('/job/:id', async (req, res) => {
         const jobs = await collection.findOne({ _id: new ObjectId(id) })
 
         if (!jobs) {
-            return res.status(404).json({ message: 'Tourist spot not found' });
+            return res.status(404).json({ message: 'job not found' });
         }
 
         res.json(jobs);
     } catch (error) {
-        console.error('Error searching for tourist spot by ID:', error);
-        res.status(500).json({ message: 'Error searching for tourist spot by ID' });
+        console.error('Error searching for job by ID:', error);
+        res.status(500).json({ message: 'Error searching for job by ID' });
     }
 });
 
