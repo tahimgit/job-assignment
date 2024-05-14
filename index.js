@@ -7,15 +7,17 @@ const { MongoClient, ServerApiVersion ,ObjectId} = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
-
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser())
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.yajxl17.mongodb.net/techlink?retryWrites=true&w=majority&appName=Cluster0`;
 
-console.log(uri)
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -53,12 +55,21 @@ app.get('/', (req, res) => {
     res.send('Server is running')
 });
 const verifyToken = (req, res, next) => {
-    if(req.body) {
-        next()
+   
+    const token = req.cookies?.token;
+  
+    if(!token) {
+        return res.status(401).send({message: "unauthorized access"})
     }
-    else {
-        res.send("401 unauthorized error")
-    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+        if(err) {
+            console.log(err)
+            return res.status(401).send({message: "unauthorized access"})
+        }
+        req.user = decode;
+        next();
+    })
+    
 }
 app.post('/token-register', async(req, res) => {
     try {
@@ -82,13 +93,13 @@ app.post('/addJob',verifyToken, async (req, res) => {
         const jobsCollection = db.collection('jobs');
        
 
-        const { image, title, posted, expiredIn, category, description, salary, vacancyNo, userEmail, userName } = req.body;
+        const { image, title, postedOn, expiredIn, category, description, salary, vacancyNo, userEmail, userName } = req.body;
         const createdAt = new Date();
         const updatedAt = new Date();
         const jobsResult = await jobsCollection.insertOne({ 
             image,
             title,
-            posted,
+            postedOn,
             expiredIn,
             category,
             description,
@@ -194,7 +205,7 @@ app.get('/jobs', async (req, res) => {
     }
 });
 // to fetch latest post
-app.get('/trending jobs', async (req, res) => {
+app.get('/trending-jobs', async (req, res) => {
     try {
         const db = client.db('techlink'); 
         const collection = db.collection('jobs'); // Assuming your posts collection is named 'posts'
@@ -209,14 +220,14 @@ app.get('/trending jobs', async (req, res) => {
     }
 });
 // to fetch country list
-app.get('/appliedjobs', async (req, res) => {
+app.get('/appliedjobs',verifyToken, async (req, res) => {
     try {
-        const users = req.cookies;
+        const users = req.user;
         const db = client.db('techlink'); 
         const collection = db.collection('appliedjobs'); // Assuming your posts collection is named 'posts'
 
         // Find the latest 6 posts, sorted by creation timestamp in descending order
-        const countryList = await collection.find({ isApplied: true, appliedBy:  users.useremail}).toArray();
+        const countryList = await collection.find({ isApplied: true, appliedBy:  users.email}).toArray();
 
         res.json(countryList);
     } catch (error) {
@@ -224,14 +235,14 @@ app.get('/appliedjobs', async (req, res) => {
         res.status(500).json({ message: 'Error fetching applied jobs' });
     }
 });
-app.get('/savedjobs', async (req, res) => {
+app.get('/savedjobs',verifyToken, async (req, res) => {
     try {
-        const users = req.cookies;
+        const users = req.user;
         const db = client.db('techlink'); 
         const collection = db.collection('appliedjobs'); // Assuming your posts collection is named 'posts'
 
         // Find the latest 6 posts, sorted by creation timestamp in descending order
-        const countryList = await collection.find({ isSaved: true, appliedBy:  users.useremail}).toArray();
+        const countryList = await collection.find({ isSaved: true, appliedBy:  users.email}).toArray();
 
         res.json(countryList);
     } catch (error) {
@@ -275,7 +286,7 @@ app.get('/job/:id', async (req, res) => {
     }
 });
 
-app.get('/myjobs/:id', async (req, res) => {
+app.get('/myjobs/:id',verifyToken, async (req, res) => {
     try {
         const db = client.db('techlink'); 
         const collection = db.collection('jobs'); 
