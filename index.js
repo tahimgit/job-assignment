@@ -265,7 +265,7 @@ app.get('/job/:id', async (req, res) => {
 
         const { id } = req.params;
 
-        // Find the tourist spot by ID
+        // Find the job by ID
         const jobs = await collection.findOne({ _id: new ObjectId(id) })
 
         if (!jobs) {
@@ -286,21 +286,21 @@ app.get('/myjobs/:id',verifyToken, async (req, res) => {
 
         const { id } = req.params;
 
-        // Find the tourist spot by ID
+        // Find the job by ID
         const jobs = await collection.find({ userEmail: id }).toArray();
 
         if (!jobs) {
-            return res.status(404).json({ message: 'Tourist spot not found' });
+            return res.status(404).json({ message: 'job not found' });
         }
 
         res.json(jobs);
     } catch (error) {
-        console.error('Error searching for tourist spot by ID:', error);
-        res.status(500).json({ message: 'Error searching for tourist spot by ID' });
+        console.error('Error searching for job by ID:', error);
+        res.status(500).json({ message: 'Error searching for job by ID' });
     }
 });
 
-// PUT endpoint to update a tourist spot by ID
+// PUT endpoint to update a job by ID
 app.put('/job/:id', async (req, res) => {
     try {
         const db = client.db('techlink'); 
@@ -309,24 +309,24 @@ app.put('/job/:id', async (req, res) => {
         const { id } = req.params;
         const updatedData = req.body;
 
-        // Update the tourist spot by ID
+        // Update the job by ID
         const result = await collection.updateOne(
             { _id: new ObjectId(id) },
             { $set: updatedData }
         );
 
         if (result.modifiedCount === 0) {
-            return res.status(404).json({ message: 'Tourist spot not found' });
+            return res.status(404).json({ message: 'job not found' });
         }
 
-        res.json({ message: 'Tourist spot updated successfully' });
+        res.json({ message: 'job updated successfully' });
     } catch (error) {
         console.error('Error updating tourist spot:', error);
         res.status(500).json({ message: 'Error updating tourist spot' });
     }
 });
 
-// DELETE endpoint to remove a tourist spot by ID
+// DELETE endpoint to remove a job by ID
 app.delete('/job/:id', async (req, res) => {
     try {
         const db = client.db('techlink'); 
@@ -334,7 +334,7 @@ app.delete('/job/:id', async (req, res) => {
 
         const { id } = req.params;
 
-        // Delete the tourist spot by ID
+        // Delete the job by ID
         const result = await collection.deleteOne({ _id: new ObjectId(id) });
 
         if (result.deletedCount === 0) {
