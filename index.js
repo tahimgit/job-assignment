@@ -239,8 +239,8 @@ app.get('/savedjobs',verifyToken, async (req, res) => {
 
         res.json(countryList);
     } catch (error) {
-        console.error('Error fetching applied jobs:', error);
-        res.status(500).json({ message: 'Error fetching applied jobs' });
+        console.error('Error fetching saved jobs:', error);
+        res.status(500).json({ message: 'Error fetching saved jobs' });
     }
 });
 app.get('/category/:id', async (req, res) => {
