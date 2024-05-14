@@ -105,7 +105,7 @@ app.post('/addJob',verifyToken, async (req, res) => {
         });
         res.status(201).json({
             message: 'job added successfully',
-            insertedjobsId: jobsResult.insertedId,
+            insertedJobsId: jobsResult.insertedId,
         });
     } catch (error) {
         console.error('Error adding job', error);
@@ -139,12 +139,12 @@ app.post('/appliedjob',verifyToken, async (req, res) => {
             updatedAt
         });
         res.status(201).json({
-            message: 'job added successfully',
-            insertedjobsId: jobsResult.insertedId,
+            message: 'job applied successfully',
+            appliedJobsId: jobsResult.insertedId,
         });
     } catch (error) {
-        console.error('Error adding job', error);
-        res.status(500).json({ message: 'Error adding job' });
+        console.error('Error applying job', error);
+        res.status(500).json({ message: 'Error applying job' });
     }
 });
 app.post('/savedjob',verifyToken, async (req, res) => {
